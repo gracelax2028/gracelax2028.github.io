@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Upcoming Tournaments - Lacrosse Portfolio</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <noscript
+      ><link rel="stylesheet" href="assets/css/noscript.css"
+    /></noscript>
+    <style>
+      .calendar-container {
+        max-width: 800px;
+        margin: auto;
+        text-align: center;
+      }
+      .calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        padding: 20px;
+        background: #f4f4f4;
+        border-radius: 10px;
+      }
+      .day {
+        aspect-ratio: 1 / 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 10px;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        position: relative;
+      }
+
+      .day-header {
+        font-weight: bold;
+        padding: 10px;
+        background: #e0e0e0;
+        text-align: center;
+      }
+
+      .has-event {
+        background: #f0f0f0;
+      }
+
+      .day-number {
+        font-weight: bold;
+      }
+      .event-dot {
+        width: 6px;
+        height: 6px;
+        background: red;
+        border-radius: 50%;
+        position: absolute;
+        bottom: 5px;
+        left: 5px;
+      }
+      .current-day {
+        font-weight: bold;
+        background: #d3d3d3;
+      }
+      .nav-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+      }
+      .hidden {
+        display: none;
+      }
+      .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        border-radius: 10px;
+      }
+      .popup input,
+      .popup textarea {
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      #map {
+        height: 300px;
+        width: 100%;
+      }
+    </style>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  </head>
+  <body class="is-preload">
+    <div id="wrapper" class="fade-in">
+      <header id="header">
+        <a href="index.html" class="logo">Lacrosse Portfolio</a>
+      </header>
+      <nav id="nav">
+        <ul class="links">
+          <li><a href="index.html">My Portfolio</a></li>
+          <li class="active">
+            <a href="tournaments.html">My Upcoming Tournaments</a>
+          </li>
+          <li><a href="aboutme.html">My Background</a></li>
+          <li><a href="contactme.html">Contact Me!</a></li>
+        </ul>
+      </nav>
+      <div id="main">
+        <section id="tournaments">
+          <header class="major"><h2>Upcoming Lacrosse Tournaments</h2></header>
+          <div class="calendar-container">
+            <div class="nav-buttons">
+              <button onclick="prevMonth()">Previous</button>
+              <h3 id="month-year"></h3>
+              <button onclick="nextMonth()">Next</button>
+            </div>
+            <div class="calendar" id="calendar"></div>
+          </div>
+          <div id="login-container">
+            <input type="text" id="username" placeholder="Enter username" />
+            <input type="password" id="password" placeholder="Enter password" />
+            <button onclick="login()">Login</button>
+            <button onclick="logout()" class="hidden" id="logout-btn">
+              Logout
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Admin Event Creation/Editing Popup -->
+      <div id="admin-popup" class="popup hidden">
+        <h3 id="popup-title">Create Event</h3>
+        <input type="text" id="event-title" placeholder="Event Title" />
+        <input type="text" id="event-location" placeholder="Location" />
+        <input type="date" id="event-date" />
+        <input type="time" id="event-time" />
+        <textarea
+          id="event-description"
+          placeholder="Event Description"
+        ></textarea>
+        <button onclick="saveEvent()">Save Event</button>
+        <button onclick="closePopup()">Cancel</button>
+        <button onclick="deleteEvent()" id="delete-event-btn" class="hidden">
+          Delete Event
+        </button>
+      </div>
+
+      <!-- User Event Details Popup -->
+      <div id="user-popup" class="popup hidden">
+        <h3 id="user-event-title"></h3>
+        <p id="user-event-location"></p>
+        <p id="user-event-date"></p>
+        <p id="user-event-time"></p>
+        <p id="user-event-description"></p>
+        <div id="map"></div>
+        <button onclick="closePopup()">Close</button>
+      </div>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <section class="split contact">
+          <section class="alt">
+            <h3>Email</h3>
+            <p>gracelax2028@gmail.com</p>
+          </section>
+          <section>
+            <h3>Phone Numberr</h3>
+            <p>848-234-6257</p>
+          </section>
+          <section>
+            <h3>My Coach</h3>
+            <p>
+              Coach Patra Acquaviva: <a href="#"> patra@centercourtclub.com</a>
+            </p>
+          </section>
+          <section>
+            <h3>Links</h3>
+            <ul class="icons alt">
+              <li>
+                <a
+                  href="https://www.instagram.com/grace.r2028/"
+                  class="icon brands fa-instagram"
+                  ><span class="label">My Lacrosse Instagram</span></a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.youtube.com/@GraceRispoli.laxHighlights"
+                  class="icon brands fa-youtube"
+                  ><span class="label">My YouTube Highlights Page</span></a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://iwlca.sportsrecruits.com/athlete/grace_rispoli"
+                  class="fas fa-star"
+                  ><span class="label"> IWLCA Recruitment Information</span></a
+                >
+              </li>
+            </ul>
+          </section>
+        </section>
+      </footer>
+      <!-- Copyright -->
+      <div id="copyright">
+        <ul>
+          <li>&copy; Grace's Lacrosse Portfolio</li>
+          <li>Grace Rispoli</li>
+          <li>
+            If any errors are found with the website, please email
+            graysonr2010@icloud.com with your issue. Thank you!
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      let currentMonth = new Date().getMonth();
+      let currentYear = new Date().getFullYear();
+      const monthYear = document.getElementById("month-year");
+      const calendar = document.getElementById("calendar");
+      const logoutBtn = document.getElementById("logout-btn");
+      const usernameInput = document.getElementById("username");
+      const passwordInput = document.getElementById("password");
+      const adminPopup = document.getElementById("admin-popup");
+      const userPopup = document.getElementById("user-popup");
+      const deleteEventBtn = document.getElementById("delete-event-btn");
+      let loggedInUser = localStorage.getItem("loggedInUser");
+      let events = JSON.parse(localStorage.getItem("events")) || {};
+
+      function generateCalendar(month, year) {
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        calendar.innerHTML = "";
+        monthYear.textContent = `${new Date(year, month).toLocaleString(
+          "default",
+          { month: "long" }
+        )} ${year}`;
+
+        // Add day headers
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        days.forEach((day) => {
+          calendar.innerHTML += `<div class="day-header">${day}</div>`;
+        });
+
+        for (let i = 0; i < firstDay; i++) {
+          calendar.innerHTML += '<div class="day"></div>';
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateStr = `${year}-${String(month + 1).padStart(
+            2,
+            "0"
+          )}-${String(day).padStart(2, "0")}`;
+          const currentDayClass =
+            day === new Date().getDate() &&
+            month === new Date().getMonth() &&
+            year === new Date().getFullYear()
+              ? "current-day"
+              : "";
+          const hasEvent = events[dateStr] ? "has-event" : "";
+          calendar.innerHTML += `
+            <div class="day ${currentDayClass} ${hasEvent}" onclick="viewEvent('${dateStr}')">
+                <span class="day-number">${day}</span>
+                ${events[dateStr] ? '<div class="event-dot"></div>' : ""}
+            </div>`;
+        }
+      }
+
+      function prevMonth() {
+        currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+        currentYear = currentMonth === 11 ? currentYear - 1 : currentYear;
+        generateCalendar(currentMonth, currentYear);
+      }
+
+      function nextMonth() {
+        currentMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+        currentYear = currentMonth === 0 ? currentYear + 1 : currentYear;
+        generateCalendar(currentMonth, currentYear);
+      }
+
+      function login() {
+        const username = usernameInput.value;
+        const password = passwordInput.value;
+
+        // Correct login details
+        if (username === "admin" && password === "gracelax2028") {
+          localStorage.setItem("loggedInUser", username);
+          loggedInUser = username;
+          updateLoginState();
+        } else {
+          alert("Incorrect username or password.");
+        }
+      }
+
+      function logout() {
+        localStorage.removeItem("loggedInUser");
+        loggedInUser = null;
+        updateLoginState();
+      }
+
+      function updateLoginState() {
+        if (loggedInUser) {
+          usernameInput.classList.add("hidden");
+          passwordInput.classList.add("hidden");
+          logoutBtn.classList.remove("hidden");
+        } else {
+          usernameInput.classList.remove("hidden");
+          passwordInput.classList.remove("hidden");
+          logoutBtn.classList.add("hidden");
+        }
+      }
+
+      function openAdminPopup(dateStr) {
+        if (loggedInUser !== "admin") return;
+
+        adminPopup.classList.remove("hidden");
+        const title = document.getElementById("event-title");
+        const location = document.getElementById("event-location");
+        const date = document.getElementById("event-date");
+        const time = document.getElementById("event-time");
+        const description = document.getElementById("event-description");
+
+        if (events[dateStr]) {
+          document.getElementById("popup-title").innerText = "Edit Event";
+          const event = events[dateStr];
+          title.value = event.title || "";
+          location.value = event.location || "";
+          date.value = dateStr;
+          time.value = event.time || "";
+          description.value = event.description || "";
+          deleteEventBtn.classList.remove("hidden");
+        } else {
+          document.getElementById("popup-title").innerText = "Create Event";
+          title.value = "";
+          location.value = "";
+          date.value = dateStr;
+          time.value = "";
+          description.value = "";
+          deleteEventBtn.classList.add("hidden");
+        }
+      }
+
+      function saveEvent() {
+        const title = document.getElementById("event-title").value;
+        const location = document.getElementById("event-location").value;
+        const date = document.getElementById("event-date").value;
+        const time = document.getElementById("event-time").value;
+        const description = document.getElementById("event-description").value;
+
+        if (!title || !location || !date) {
+          alert(
+            "Please fill in at least the title, location, and date fields."
+          );
+          return;
+        }
+
+        events[date] = {
+          title,
+          location,
+          date,
+          time,
+          description,
+        };
+
+        localStorage.setItem("events", JSON.stringify(events));
+        closePopup();
+        generateCalendar(currentMonth, currentYear);
+      }
+
+      function deleteEvent() {
+        const dateStr = document.getElementById("event-date").value;
+        delete events[dateStr];
+        localStorage.setItem("events", JSON.stringify(events));
+        closePopup();
+        generateCalendar(currentMonth, currentYear);
+      }
+
+      function closePopup() {
+        adminPopup.classList.add("hidden");
+        userPopup.classList.add("hidden");
+      }
+
+      function viewEvent(dateStr) {
+        if (loggedInUser === "admin") {
+          openAdminPopup(dateStr);
+        } else if (events[dateStr]) {
+          const event = events[dateStr];
+          document.getElementById("user-event-title").innerText = event.title;
+          document.getElementById(
+            "user-event-location"
+          ).innerText = `Location: ${event.location}`;
+          document.getElementById(
+            "user-event-date"
+          ).innerText = `Date: ${event.date}`;
+          document.getElementById(
+            "user-event-time"
+          ).innerText = `Time: ${event.time}`;
+          document.getElementById("user-event-description").innerText =
+            event.description;
+          userPopup.classList.remove("hidden");
+          initMap(event.location);
+        }
+      }
+
+      function initMap(location) {
+        const map = L.map("map").setView([51.505, -0.09], 13); // Default position
+
+        // OpenStreetMap tile layer
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(map);
+
+        // Geocoding to convert address to coordinates (location is passed from event data)
+        fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${location}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            if (data[0]) {
+              const lat = data[0].lat;
+              const lon = data[0].lon;
+              map.setView([lat, lon], 13);
+              L.marker([lat, lon]).addTo(map);
+            }
+          });
+      }
+
+      generateCalendar(currentMonth, currentYear);
+      updateLoginState();
+    </script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  </body>
+</html>
