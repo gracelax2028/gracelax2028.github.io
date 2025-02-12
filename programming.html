@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <noscript>
+      <link rel="stylesheet" href="assets/css/noscript.css" />
+    </noscript>
+    <title>Programming - Toby's Portfolio</title>
+    <style>
+      /* Add smooth scrolling container styles */
+      .commission-list {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        gap: 20px;
+        padding: 20px;
+      }
+
+      .commission {
+        min-width: 300px;
+        max-width: 300px;
+        background: #ffffff; /* White background for each commission box */
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: center; /* Center text horizontally */
+      }
+
+      .commission h2 {
+        font-size: 1.25em;
+      }
+
+      .commission-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Vertically center the content */
+        align-items: center; /* Horizontally center content */
+        text-align: center;
+      }
+
+      .commission img {
+        border-radius: 8px;
+      }
+
+      /* Add scrollbar styling (optional) */
+      .commission-list::-webkit-scrollbar {
+        height: 8px;
+      }
+
+      .commission-list::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 10px;
+      }
+
+      .commission-list::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+      }
+
+      /* Hide Python and JavaScript sections by default */
+      .programming-section {
+        display: none;
+      }
+
+      /* Make active sections visible */
+      .active {
+        display: block;
+      }
+
+      /* Style for buttons */
+      .language-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .language-buttons button {
+        padding: 10px 20px;
+        font-size: 1.2em;
+        cursor: pointer;
+        border: 2px solid #333; /* Border color */
+        background-color: #fff; /* White background */
+        color: #333; /* Text color */
+        border-radius: 5px;
+        text-align: center; /* Center text horizontally */
+        display: flex;
+        justify-content: center; /* Center text vertically */
+        align-items: center; /* Center text vertically */
+        transition: background-color 0.3s, color 0.3s; /* Transition for smooth hover effect */
+      }
+
+      .language-buttons button:hover {
+        background-color: #333; /* Dark background on hover */
+        color: #fff; /* White text on hover */
+      }
+
+      .language-buttons button.active {
+        background-color: #333; /* Dark background for active button */
+        color: #fff; /* White text for active button */
+      }
+    </style>
+  </head>
+  <body class="is-preload">
+    <!-- Wrapper -->
+    <div id="wrapper" class="fade-in">
+      <!-- Header -->
+      <header id="header">
+        <a href="index.html" class="logo">Portfolio</a>
+      </header>
+
+      <!-- Nav -->
+      <nav id="nav">
+        <ul class="links">
+          <li><a href="index.html">My Portfolio</a></li>
+          <li><a href="commissions.html">My Recent Commissions</a></li>
+          <li class="active"><a href="programming.html">Programming</a></li>
+          <li><a href="hireme.html">Hire Me!</a></li>
+        </ul>
+      </nav>
+
+      <!-- Main -->
+      <div id="main">
+        <section id="programming">
+          <header class="major">
+            <h2>My Programming Projects</h2>
+          </header>
+
+          <!-- Language Selection Buttons -->
+          <div class="language-buttons">
+            <button onclick="showSection('javascript')" id="btn-js">
+              JavaScript
+            </button>
+            <button onclick="showSection('python')" id="btn-python">
+              Python
+            </button>
+          </div>
+
+          <!-- JavaScript Projects Section -->
+          <div id="javascript" class="programming-section">
+            <header>
+              <h3>JavaScript Projects</h3>
+            </header>
+            <div class="commission-list">
+              <!-- Commission 1 (JavaScript) -->
+              <article class="commission">
+                <header>
+                  <h2>Rock Debris Generation</h2>
+                </header>
+                <div class="commission-content">
+                  <p>
+                    <strong>Description:</strong> Dynamic debris effects using
+                    physics-based interactions for games.
+                  </p>
+                  <div class="testimonial">
+                    <p><strong>Customer Rating:</strong> ★★★★★</p>
+                    <p>
+                      <strong>Testimonial:</strong> "Amazing work! The debris
+                      looks and feels realistic."
+                    </p>
+                  </div>
+                </div>
+              </article>
+              <!-- Add more JavaScript projects here -->
+            </div>
+          </div>
+
+          <!-- Python Projects Section -->
+          <div id="python" class="programming-section">
+            <header>
+              <h3>Python Projects</h3>
+            </header>
+            <div class="commission-list">
+              <!-- Work Display: Neural Network Visualizer -->
+              <article class="work-display">
+                <header>
+                  <h2>#1 Neural Network Visualizer</h2>
+                </header>
+                <div class="work-content">
+                  <p>
+                    <strong>Description:</strong> An interactive neural network
+                    visualizer built to demonstrate the inner workings of deep
+                    learning models. This tool allows users to visualize how
+                    data flows through different layers of the network.
+                  </p>
+                  <div
+                    class="video-container"
+                    style="
+                      display: grid;
+                      place-items: center;
+                      max-width: 100%;
+                      overflow: hidden;
+                    "
+                  >
+                    <strong>Watch the Demo:</strong>
+                    <video width="500" height="auto" autoplay loop muted>
+                      <source
+                        src="videos/neural-network-visualizer.mp4"
+                        type="video/mp4"
+                      />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Auto Logging -->
+              <article class="work-display">
+                <header>
+                  <h2>#2 Point Auto Logging</h2>
+                </header>
+                <div class="work-content">
+                  <p>
+                    <strong>Description:</strong> A responsive Discord Bot,
+                    which listens for messages to be sent in a log channel. Once
+                    that message is sent, the bot automatically logs the crew
+                    and gives them a point for their repsepctive roles.
+                  </p>
+                  <div
+                    class="video-container"
+                    style="
+                      display: grid;
+                      place-items: center;
+                      max-width: 100%;
+                      overflow: hidden;
+                    "
+                  >
+                    <strong>Watch the Demo:</strong>
+                    <video width="500" height="auto" autoplay loop muted>
+                      <source src="videos/auto-logging.mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                </div>
+              </article>
+
+              <article class="work-display">
+                <header>
+                  <h2>#3 The Detective *DISCONTINUED*</h2>
+                </header>
+                <div class="work-content">
+                  <p>
+                    <strong>Description:</strong> A detective like Discord bot,
+                    which puts you in the role of a detective. You must solve
+                    mysteries, and buy new items to level up. You also must
+                    explore crime scenes and find the guilty person. This was a
+                    Discord Bot my friend Conos and I made, however, the bot is
+                    now discontinued.
+                  </p>
+                </div>
+              </article>
+
+              <!-- Add more Python projects here -->
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <section class="split contact">
+          <section>
+            <h3>Discord</h3>
+            <p>Toby01</p>
+          </section>
+          <section>
+            <h3>Discord Server</h3>
+            <p><a href="https://discord.gg/gKspnDcQdt">Discord Server</a></p>
+          </section>
+          <section>
+            <h3>Email</h3>
+            <p>
+              <a href="mailto:tobyscomissions22@gmail.com"
+                >tobyscomissions22@gmail.com</a
+              >
+            </p>
+          </section>
+          <section>
+            <h3>Social</h3>
+            <ul class="icons alt">
+              <li>
+                <a
+                  href="https://github.com/tobydev01"
+                  class="icon brands alt fa-github"
+                >
+                  <span class="label">GitHub</span>
+                </a>
+              </li>
+            </ul>
+          </section>
+        </section>
+      </footer>
+
+      <!-- Copyright -->
+      <div id="copyright">
+        <ul>
+          <li>&copy; Toby's Portfolio</li>
+          <li>Toby01</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+
+    <!-- Custom script for toggling sections -->
+    <script>
+      function showSection(language) {
+        // Hide all sections
+        const sections = document.querySelectorAll(".programming-section");
+        sections.forEach((section) => {
+          section.classList.remove("active");
+        });
+
+        // Remove active class from all buttons
+        const buttons = document.querySelectorAll(".language-buttons button");
+        buttons.forEach((button) => {
+          button.classList.remove("active");
+        });
+
+        // Show the selected section
+        const selectedSection = document.getElementById(language);
+        selectedSection.classList.add("active");
+
+        // Add active class to the clicked button
+        const activeButton = document.getElementById("btn-" + language);
+        activeButton.classList.add("active");
+      }
+    </script>
+  </body>
+</html>
