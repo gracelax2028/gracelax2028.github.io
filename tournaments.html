@@ -415,30 +415,6 @@
         }
       }
 
-      function initMap(location) {
-        const map = L.map("map").setView([51.505, -0.09], 13); // Default position
-
-        // OpenStreetMap tile layer
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(map);
-
-        // Geocoding to convert address to coordinates (location is passed from event data)
-        fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${location}`
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            if (data[0]) {
-              const lat = data[0].lat;
-              const lon = data[0].lon;
-              map.setView([lat, lon], 13);
-              L.marker([lat, lon]).addTo(map);
-            }
-          });
-      }
-
       generateCalendar(currentMonth, currentYear);
       updateLoginState();
     </script>
