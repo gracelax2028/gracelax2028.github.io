@@ -383,14 +383,11 @@
           );
           return;
         }
-        fetch(
-          "https://3f1283cd-4af5-4b48-85db-57b44fbc12d9-00-2rnk6gzcv4al3.janeway.replit.dev/api/events",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title, location, date, time, description }),
-          }
-        )
+        fetch("https://lacrosse-events.onrender.com/api/events", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, location, date, time, description }),
+        })
           .then((response) => response.json())
           .then((result) => {
             if (result.error) {
@@ -414,14 +411,10 @@
           return;
         }
         if (!confirm("Are you sure you want to delete this event?")) return;
-        fetch(
-          "https://3f1283cd-4af5-4b48-85db-57b44fbc12d9-00-2rnk6gzcv4al3.janeway.replit.dev/api/events/" +
-            dateStr,
-          {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-          }
-        )
+        fetch("https://lacrosse-events.onrender.com/api/events/" + dateStr, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        })
           .then((response) => response.json())
           .then((result) => {
             if (result.error) {
@@ -467,9 +460,7 @@
 
       <!-- Inside your existing <script> in tournaments.html -->
       function loadUpcomingEvents() {
-        fetch(
-          "https://3f1283cd-4af5-4b48-85db-57b44fbc12d9-00-2rnk6gzcv4al3.janeway.replit.dev/api/upcoming-events"
-        )
+        fetch("https://lacrosse-events.onrender.com/api/upcoming-events")
           .then((response) => response.json())
           .then((data) => {
             // Map the events (by date) for calendar lookup
