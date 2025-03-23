@@ -367,17 +367,29 @@
           return;
         }
 
-        events[date] = {
-          title,
-          location,
-          date,
-          time,
-          description,
-        };
-
-        localStorage.setItem("events", JSON.stringify(events));
-        closePopup();
-        generateCalendar(currentMonth, currentYear);
+        // POST to our API – note the correct endpoint "/api/events"
+        fetch(
+          "https://3f1283cd-4af5-4b48-85db-57b44fbc12d9-00-2rnk6gzcv4al3.janeway.replit.dev/api/events",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ title, location, date, time, description }),
+          }
+        )
+          .then((response) => response.json())
+          .then((result) => {
+            if (result.error) {
+              alert(result.error);
+            } else {
+              // Optionally refresh your calendar and upcoming events
+              generateCalendar(currentMonth, currentYear);
+              loadUpcomingEvents();
+              closePopup();
+            }
+          })
+          .catch((error) => console.error("Error saving event:", error));
       }
 
       function deleteEvent() {
@@ -419,5 +431,64 @@
       updateLoginState();
     </script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <section class="practice-routines">
+      <header class="major">
+        <h2>My Practice Routines</h2>
+      </header>
+      <div id="practice-routines">
+        <!-- Static or dynamic content for practice routines goes here -->
+        <ul>
+          <li>Routine 1: Warm-up & Drills</li>
+          <li>Routine 2: Passing & Catching</li>
+          <li>Routine 3: Shooting Practice</li>
+          <li>Routine 4: Tactical Scrimmage</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="upcoming-events">
+      <header class="major">
+        <h2>Upcoming Events</h2>
+      </header>
+      <div id="upcoming-events">
+        <!-- Upcoming events will be loaded here via JS -->f
+      </div>
+    </section>
+
+    <script>
+      // New function to load upcoming events from the server
+      function loadUpcomingEvents() {
+        fetch(
+          "https://3f1283cd-4af5-4b48-85db-57b44fbc12d9-00-2rnk6gzcv4al3.janeway.replit.dev/api/upcoming-events"
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            const container = document.getElementById("upcoming-events");
+            container.innerHTML = "";
+            if (data.events && data.events.length > 0) {
+              data.events.forEach((event) => {
+                const eventElement = `
+                  <div class="upcoming-event">
+                    <h3>${event.title}</h3>
+                    <p>Location: ${event.location}</p>
+                    <p>Date: ${event.date} Time: ${event.time || ""}</p>
+                    <p>${event.description}</p>
+                  </div>
+                `;
+                container.innerHTML += eventElement;
+              });
+            } else {
+              container.innerHTML = "<p>No upcoming events.</p>";
+            }
+          })
+          .catch((error) =>
+            console.error("Error loading upcoming events:", error)
+          );
+      }
+
+      // Call loadUpcomingEvents on page load
+      document.addEventListener("DOMContentLoaded", loadUpcomingEvents);
+    </script>
   </body>
 </html>
