@@ -26,7 +26,7 @@
         border-radius: 10px;
       }
       .day {
-        aspect-ratio: 1 / 1;
+        aspect-ratio: 1/1;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -38,18 +38,15 @@
         cursor: pointer;
         position: relative;
       }
-
       .day-header {
         font-weight: bold;
         padding: 10px;
         background: #e0e0e0;
         text-align: center;
       }
-
       .has-event {
         background: #f0f0f0;
       }
-
       .day-number {
         font-weight: bold;
       }
@@ -97,8 +94,19 @@
         height: 300px;
         width: 100%;
       }
+      /* Style for Upcoming Events section */
+      .upcoming-event {
+        background: #fff;
+        margin: 10px auto;
+        padding: 15px;
+        max-width: 800px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      .upcoming-events header.major {
+        text-align: center;
+      }
     </style>
-
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   </head>
@@ -135,6 +143,16 @@
             <button onclick="logout()" class="hidden" id="logout-btn">
               Logout
             </button>
+          </div>
+        </section>
+
+        <!-- Upcoming Events Section (moved inside wrapper) -->
+        <section class="upcoming-events">
+          <header class="major">
+            <h2>Upcoming Events</h2>
+          </header>
+          <div id="upcoming-events">
+            <!-- Upcoming events will be loaded here via JS -->
           </div>
         </section>
       </div>
@@ -176,13 +194,13 @@
             <p>gracelax2028@gmail.com</p>
           </section>
           <section>
-            <h3>Phone Numberr</h3>
+            <h3>Phone Number</h3>
             <p>848-234-6257</p>
           </section>
           <section>
             <h3>My Coach</h3>
             <p>
-              Coach Patra Acquaviva: <a href="#"> patra@centercourtclub.com</a>
+              Coach Patra Acquaviva: <a href="#">patra@centercourtclub.com</a>
             </p>
           </section>
           <section>
@@ -192,22 +210,25 @@
                 <a
                   href="https://www.instagram.com/grace.r2028/"
                   class="icon brands fa-instagram"
-                  ><span class="label">My Lacrosse Instagram</span></a
                 >
+                  <span class="label">My Lacrosse Instagram</span>
+                </a>
               </li>
               <li>
                 <a
                   href="https://www.youtube.com/@GraceRispoli.laxHighlights"
                   class="icon brands fa-youtube"
-                  ><span class="label">My YouTube Highlights Page</span></a
                 >
+                  <span class="label">My YouTube Highlights Page</span>
+                </a>
               </li>
               <li>
                 <a
                   href="https://iwlca.sportsrecruits.com/athlete/grace_rispoli"
                   class="fas fa-star"
-                  ><span class="label"> IWLCA Recruitment Information</span></a
                 >
+                  <span class="label">IWLCA Recruitment Information</span>
+                </a>
               </li>
             </ul>
           </section>
@@ -220,13 +241,15 @@
           <li>Grace Rispoli</li>
           <li>
             If any errors are found with the website, please email
-            graysonr2010@icloud.com with your issue. Thank you!
+            gracelax2028@icloud.com with your issue. Thank you!
           </li>
         </ul>
       </div>
     </div>
 
+    <!-- Scripts -->
     <script>
+      // Remove localStorage usage so we rely on the API
       let currentMonth = new Date().getMonth();
       let currentYear = new Date().getFullYear();
       const monthYear = document.getElementById("month-year");
@@ -238,43 +261,42 @@
       const userPopup = document.getElementById("user-popup");
       const deleteEventBtn = document.getElementById("delete-event-btn");
       let loggedInUser = localStorage.getItem("loggedInUser");
-      let events = JSON.parse(localStorage.getItem("events")) || {};
+      // Global events will be loaded from the SQL API and stored here.
+      let events = {};
 
       function generateCalendar(month, year) {
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
         calendar.innerHTML = "";
         monthYear.textContent = `${new Date(year, month).toLocaleString(
           "default",
           { month: "long" }
         )} ${year}`;
-
         // Add day headers
         const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         days.forEach((day) => {
           calendar.innerHTML += `<div class="day-header">${day}</div>`;
         });
 
+        const firstDay = new Date(year, month, 1).getDay();
         for (let i = 0; i < firstDay; i++) {
           calendar.innerHTML += '<div class="day"></div>';
         }
-
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
         for (let day = 1; day <= daysInMonth; day++) {
-          const dateStr = `${year}-${String(month + 1).padStart(
-            2,
-            "0"
-          )}-${String(day).padStart(2, "0")}`;
-          const currentDayClass =
+          let dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+            day
+          ).padStart(2, "0")}`;
+          // If an event exists on that day, mark it
+          let hasEvent = events[dateStr] ? "has-event" : "";
+          let currentDayClass =
             day === new Date().getDate() &&
             month === new Date().getMonth() &&
             year === new Date().getFullYear()
               ? "current-day"
               : "";
-          const hasEvent = events[dateStr] ? "has-event" : "";
           calendar.innerHTML += `
-            <div class="day ${currentDayClass} ${hasEvent}" onclick="viewEvent('${dateStr}')">
-                <span class="day-number">${day}</span>
-                ${events[dateStr] ? '<div class="event-dot"></div>' : ""}
+            <div class="day ${hasEvent} ${currentDayClass}" onclick="viewEvent('${dateStr}')">
+              <span class="day-number">${day}</span>
+              ${events[dateStr] ? '<div class="event-dot"></div>' : ""}
             </div>`;
         }
       }
@@ -294,8 +316,6 @@
       function login() {
         const username = usernameInput.value;
         const password = passwordInput.value;
-
-        // Correct login details
         if (username === "admin" && password === "gracelax2028") {
           localStorage.setItem("loggedInUser", username);
           loggedInUser = username;
@@ -325,22 +345,20 @@
 
       function openAdminPopup(dateStr) {
         if (loggedInUser !== "admin") return;
-
         adminPopup.classList.remove("hidden");
         const title = document.getElementById("event-title");
         const location = document.getElementById("event-location");
         const date = document.getElementById("event-date");
         const time = document.getElementById("event-time");
         const description = document.getElementById("event-description");
-
         if (events[dateStr]) {
           document.getElementById("popup-title").innerText = "Edit Event";
-          const event = events[dateStr];
-          title.value = event.title || "";
-          location.value = event.location || "";
+          const ev = events[dateStr];
+          title.value = ev.title || "";
+          location.value = ev.location || "";
           date.value = dateStr;
-          time.value = event.time || "";
-          description.value = event.description || "";
+          time.value = ev.time || "";
+          description.value = ev.description || "";
           deleteEventBtn.classList.remove("hidden");
         } else {
           document.getElementById("popup-title").innerText = "Create Event";
@@ -359,22 +377,17 @@
         const date = document.getElementById("event-date").value;
         const time = document.getElementById("event-time").value;
         const description = document.getElementById("event-description").value;
-
         if (!title || !location || !date) {
           alert(
             "Please fill in at least the title, location, and date fields."
           );
           return;
         }
-
-        // POST to our API – note the correct endpoint "/api/events"
         fetch(
           "https://3f1283cd-4af5-4b48-85db-57b44fbc12d9-00-2rnk6gzcv4al3.janeway.replit.dev/api/events",
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ title, location, date, time, description }),
           }
         )
@@ -383,8 +396,7 @@
             if (result.error) {
               alert(result.error);
             } else {
-              // Optionally refresh your calendar and upcoming events
-              generateCalendar(currentMonth, currentYear);
+              // Reload events from the server
               loadUpcomingEvents();
               closePopup();
             }
@@ -392,12 +404,36 @@
           .catch((error) => console.error("Error saving event:", error));
       }
 
+      // Note: Deletion now should be handled via the API;
+      // if you haven’t set up a DELETE endpoint, you may need to add one.
       function deleteEvent() {
+        // Get the date from the event popup. This assumes you're using the event-date input as the unique identifier.
         const dateStr = document.getElementById("event-date").value;
-        delete events[dateStr];
-        localStorage.setItem("events", JSON.stringify(events));
-        closePopup();
-        generateCalendar(currentMonth, currentYear);
+        if (!dateStr) {
+          alert("No event date specified.");
+          return;
+        }
+        if (!confirm("Are you sure you want to delete this event?")) return;
+        fetch(
+          "https://3f1283cd-4af5-4b48-85db-57b44fbc12d9-00-2rnk6gzcv4al3.janeway.replit.dev/api/events/" +
+            dateStr,
+          {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+          .then((response) => response.json())
+          .then((result) => {
+            if (result.error) {
+              alert(result.error);
+            } else {
+              alert("Event deleted successfully.");
+              // Reload events from the server
+              loadUpcomingEvents();
+              closePopup();
+            }
+          })
+          .catch((error) => console.error("Error deleting event:", error));
       }
 
       function closePopup() {
@@ -408,87 +444,91 @@
       function viewEvent(dateStr) {
         if (loggedInUser === "admin") {
           openAdminPopup(dateStr);
-        } else if (events[dateStr]) {
-          const event = events[dateStr];
-          document.getElementById("user-event-title").innerText = event.title;
-          document.getElementById(
-            "user-event-location"
-          ).innerText = `Location: ${event.location}`;
-          document.getElementById(
-            "user-event-date"
-          ).innerText = `Date: ${event.date}`;
-          document.getElementById(
-            "user-event-time"
-          ).innerText = `Time: ${event.time}`;
-          document.getElementById("user-event-description").innerText =
-            event.description;
-          userPopup.classList.remove("hidden");
-          initMap(event.location);
+        } else {
+          const ev = events[dateStr];
+          if (ev) {
+            document.getElementById("user-event-title").innerText = ev.title;
+            document.getElementById(
+              "user-event-location"
+            ).innerText = `Location: ${ev.location}`;
+            document.getElementById(
+              "user-event-date"
+            ).innerText = `Date: ${ev.date}`;
+            document.getElementById(
+              "user-event-time"
+            ).innerText = `Time: ${ev.time}`;
+            document.getElementById("user-event-description").innerText =
+              ev.description;
+            userPopup.classList.remove("hidden");
+            initMap(ev.location);
+          }
         }
       }
 
-      generateCalendar(currentMonth, currentYear);
-      updateLoginState();
-    </script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-    <section class="practice-routines">
-      <header class="major">
-        <h2>My Practice Routines</h2>
-      </header>
-      <div id="practice-routines">
-        <!-- Static or dynamic content for practice routines goes here -->
-        <ul>
-          <li>Routine 1: Warm-up & Drills</li>
-          <li>Routine 2: Passing & Catching</li>
-          <li>Routine 3: Shooting Practice</li>
-          <li>Routine 4: Tactical Scrimmage</li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="upcoming-events">
-      <header class="major">
-        <h2>Upcoming Events</h2>
-      </header>
-      <div id="upcoming-events">
-        <!-- Upcoming events will be loaded here via JS -->f
-      </div>
-    </section>
-
-    <script>
-      // New function to load upcoming events from the server
+      <!-- Inside your existing <script> in tournaments.html -->
       function loadUpcomingEvents() {
         fetch(
           "https://3f1283cd-4af5-4b48-85db-57b44fbc12d9-00-2rnk6gzcv4al3.janeway.replit.dev/api/upcoming-events"
         )
           .then((response) => response.json())
           .then((data) => {
+            // Map the events (by date) for calendar lookup
+            events = {};
+            data.events.forEach((ev) => {
+              events[ev.date] = ev;
+            });
+
+            // Build a table for Upcoming Events
             const container = document.getElementById("upcoming-events");
-            container.innerHTML = "";
             if (data.events && data.events.length > 0) {
-              data.events.forEach((event) => {
-                const eventElement = `
-                  <div class="upcoming-event">
-                    <h3>${event.title}</h3>
-                    <p>Location: ${event.location}</p>
-                    <p>Date: ${event.date} Time: ${event.time || ""}</p>
-                    <p>${event.description}</p>
-                  </div>
-                `;
-                container.innerHTML += eventElement;
+              let html = `<table class="upcoming-table" style="width:100%; border-collapse: collapse;">
+                      <thead>
+                        <tr style="background:#f2f2f2;">
+                          <th style="border: 1px solid #ddd; padding: 8px;">Title</th>
+                          <th style="border: 1px solid #ddd; padding: 8px;">Location</th>
+                          <th style="border: 1px solid #ddd; padding: 8px;">Date</th>
+                          <th style="border: 1px solid #ddd; padding: 8px;">Time</th>
+                          <th style="border: 1px solid #ddd; padding: 8px;">Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>`;
+              data.events.forEach((ev) => {
+                html += `<tr>
+                      <td style="border: 1px solid #ddd; padding: 8px;">${
+                        ev.title
+                      }</td>
+                      <td style="border: 1px solid #ddd; padding: 8px;">${
+                        ev.location
+                      }</td>
+                      <td style="border: 1px solid #ddd; padding: 8px;">${
+                        ev.date
+                      }</td>
+                      <td style="border: 1px solid #ddd; padding: 8px;">${
+                        ev.time || ""
+                      }</td>
+                      <td style="border: 1px solid #ddd; padding: 8px;">${
+                        ev.description
+                      }</td>
+                    </tr>`;
               });
+              html += `</tbody></table>`;
+              container.innerHTML = html;
             } else {
               container.innerHTML = "<p>No upcoming events.</p>";
             }
+            // Refresh the calendar to mark days having events.
+            generateCalendar(currentMonth, currentYear);
           })
           .catch((error) =>
             console.error("Error loading upcoming events:", error)
           );
       }
 
-      // Call loadUpcomingEvents on page load
-      document.addEventListener("DOMContentLoaded", loadUpcomingEvents);
+      // Initial calls
+      loadUpcomingEvents();
+      generateCalendar(currentMonth, currentYear);
+      updateLoginState();
     </script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   </body>
 </html>
